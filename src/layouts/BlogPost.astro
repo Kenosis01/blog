@@ -1,6 +1,6 @@
 ---
 import BaseHead from '../components/BaseHead.astro';
-import { SITE_TITLE } from '../consts';
+import { SITE_TITLE, BASE_PATH } from '../consts';
 import Animate from '../components/Animate.astro';
 import type { CollectionEntry } from 'astro:content';
 
@@ -46,7 +46,7 @@ const { title, description, pubDate } = Astro.props;
 		<main>
 			<article>
 				<header class="intro">
-					<a href="/">&larr; {SITE_TITLE}</a>
+					<a href={`${BASE_PATH}/`}>&larr; {SITE_TITLE}</a>
 					<p class="date">{pubDate.toLocaleDateString('en-us', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
 					<h1>{title}</h1>
 				</header>

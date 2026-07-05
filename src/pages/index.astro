@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Animate from '../components/Animate.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { SITE_DESCRIPTION, SITE_TITLE, BASE_PATH } from '../consts';
 
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
@@ -80,7 +80,7 @@ const posts = (await getCollection('blog')).sort(
 				{
 					posts.map((post) => (
 						<li class="post-item">
-							<a href={`/${post.id}/`}>
+							<a href={`${BASE_PATH}/${post.id}/`}>
 								<h2 class="post-title">{post.data.title}</h2>
 								<p class="post-desc">{post.data.description}</p>
 								<p class="post-meta">
