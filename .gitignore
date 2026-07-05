@@ -31,3 +31,9 @@ Thumbs.db
 bun.lock
 yarn.lock
 pnpm-lock.yaml
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
