@@ -1,0 +1,35 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import { SITE_TITLE } from '../consts';
+import Animate from '../components/Animate.astro';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`About — ${SITE_TITLE}`} description="About Tejash Raj" />
+	</head>
+	<body>
+		<main>
+			<div class="intro">
+				<h1>About</h1>
+				<p>I'm Tejash Raj from India. I write about AI, code, and building things.</p>
+			</div>
+		</main>
+		<Animate />
+		<footer>
+			&copy; {new Date().getFullYear()} Tejash Raj
+		</footer>
+		<style>
+			.intro {
+				text-align: center;
+			}
+			footer {
+				padding: 4em 1em 3em 1em;
+				text-align: center;
+				font-size: 0.85em;
+				opacity: 0.5;
+			}
+		</style>
+	</body>
+</html>

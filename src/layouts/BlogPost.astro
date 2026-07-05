@@ -1,0 +1,61 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import { SITE_TITLE } from '../consts';
+import Animate from '../components/Animate.astro';
+import type { CollectionEntry } from 'astro:content';
+
+type Props = CollectionEntry<'blog'>['data'];
+
+const { title, description, pubDate } = Astro.props;
+---
+
+<html lang="en">
+	<head>
+		<BaseHead title={`${title} — ${SITE_TITLE}`} description={description} />
+		<style>
+			article header {
+				text-align: center;
+				margin-bottom: 2em;
+			}
+			article header a {
+				opacity: 0.5;
+				text-decoration: none;
+				font-size: 0.85em;
+			}
+			article header a:hover {
+				opacity: 0.8;
+			}
+			.date {
+				opacity: 0.5;
+				font-size: 0.8em;
+				margin-bottom: 0.3em;
+			}
+			h1 {
+				margin-top: 0;
+				font-size: 1.65em;
+			}
+			footer {
+				padding: 4em 1em 3em 1em;
+				text-align: center;
+				font-size: 0.85em;
+				opacity: 0.5;
+			}
+		</style>
+	</head>
+	<body>
+		<main>
+			<article>
+				<header class="intro">
+					<a href="/">&larr; {SITE_TITLE}</a>
+					<p class="date">{pubDate.toLocaleDateString('en-us', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
+					<h1>{title}</h1>
+				</header>
+				<slot />
+			</article>
+		</main>
+		<Animate />
+		<footer>
+			&copy; {new Date().getFullYear()} Tejash Raj
+		</footer>
+	</body>
+</html>
