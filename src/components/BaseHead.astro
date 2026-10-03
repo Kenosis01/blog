@@ -1,14 +1,64 @@
 ---
 import '../styles/global.css';
-import { SITE_TITLE, BASE_PATH } from '../consts';
+import { SITE_TITLE, SITE_DESCRIPTION, BASE_PATH } from '../consts';
 import { Font } from 'astro:assets';
 
 interface Props {
 	title: string;
 	description: string;
+	/** Absolute or BASE_PATH-relative path to a social preview image. */
+	image?: string;
+	/** "article" for blog posts, "website" otherwise. */
+	type?: 'website' | 'article';
+	publishedTime?: Date;
+	modifiedTime?: Date;
+	tags?: string[];
 }
 
-const { title, description } = Astro.props;
+const {
+	title,
+	description,
+	image = '/og-default.jpg',
+	type = 'website',
+	publishedTime,
+	modifiedTime,
+	tags = [],
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+// Absolute URLs pass through; site-relative ones must keep the /blog base,
+// so resolve against the origin, not the canonical (which already has a path).
+const ogImage = new URL(
+	image.startsWith('http') ? image : BASE_PATH + image,
+	Astro.site,
+);
+
+// JSON-LD: BlogPosting for articles, WebSite + Person for the rest.
+const jsonLd = type === 'article'
+	? {
+			'@context': 'https://schema.org',
+			'@type': 'BlogPosting',
+			headline: title,
+			description,
+			image: [ogImage.href],
+			datePublished: publishedTime?.toISOString(),
+			dateModified: (modifiedTime ?? publishedTime)?.toISOString(),
+			keywords: tags.join(', '),
+			mainEntityOfPage: { '@type': 'WebPage', '@id': canonical.href },
+			author: {
+				'@type': 'Person',
+				name: 'Tejash Raj',
+				url: new URL(BASE_PATH + '/about', Astro.site).href,
+			},
+		}
+	: {
+			'@context': 'https://schema.org',
+			'@type': 'WebSite',
+			name: SITE_TITLE,
+			description: SITE_DESCRIPTION,
+			url: canonical.href,
+			author: { '@type': 'Person', name: 'Tejash Raj' },
+		};
 ---
 
 <meta charset="utf-8" />
@@ -18,10 +68,30 @@ const { title, description } = Astro.props;
 <link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href={new URL(`${BASE_PATH}/rss.xml`, Astro.site)} />
 <meta name="generator" content={Astro.generator} />
 <Font cssVariable="--font-atkinson" preload />
-<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+<link rel="canonical" href={canonical} />
 <title>{title}</title>
 <meta name="description" content={description} />
-<meta property="og:type" content="website" />
+<meta name="author" content="Tejash Raj" />
+{tags.length > 0 && <meta name="keywords" content={tags.join(', ')} />}
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+
+<!-- Open Graph -->
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={SITE_TITLE} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:alt" content={title} />
+{publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
+{modifiedTime && <meta property="article:modified_time" content={modifiedTime.toISOString()} />}
+{tags.map((tag) => <meta property="article:tag" content={tag} />)}
+
+<!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+<meta name="twitter:image:alt" content={title} />
+
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
